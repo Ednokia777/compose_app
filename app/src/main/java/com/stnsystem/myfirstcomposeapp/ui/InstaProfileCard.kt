@@ -20,7 +20,6 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.State
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -31,15 +30,15 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.stnsystem.myfirstcomposeapp.InstagramModel
 import com.stnsystem.myfirstcomposeapp.MainViewModel
 import com.stnsystem.myfirstcomposeapp.R
 
 @Composable
 fun InstaProfileCard(
-    viewModel: MainViewModel
+    model: InstagramModel,
+    onFollowedButtonClickListener: (InstagramModel) -> Unit
 ) {
-    Log.d("RECOMPOSITION", "InstaProfileCard")
-    val isFollowed = viewModel.isFollowing.observeAsState(false)
     Card(
         modifier = Modifier.padding(8.dp),
         colors = CardDefaults.cardColors(MaterialTheme.colorScheme.background),
@@ -75,13 +74,12 @@ fun InstaProfileCard(
                 UserStatistics("Following", "76")
             }
             Text(
-                text = "Instagram",
+                text = "Instagram ${model.id}",
                 fontSize = 32.sp,
                 fontFamily = FontFamily.Cursive
             )
             Text(
-                text = "№" +
-                        "#YoursToMake",
+                text = "#${model.title}",
                 fontSize = 14.sp,
                 fontFamily = FontFamily.Cursive
             )
@@ -90,8 +88,8 @@ fun InstaProfileCard(
                 fontSize = 14.sp,
                 fontFamily = FontFamily.Cursive
             )
-            FollowButton(isFollowed = isFollowed) {
-                viewModel.changeFollowingStatus()
+            FollowButton(isFollowed = model.isFollowed) {
+                onFollowedButtonClickListener(model)
             }
         }
     }
@@ -99,21 +97,21 @@ fun InstaProfileCard(
 
 @Composable
 private fun FollowButton(
-    isFollowed: State<Boolean>,
+    isFollowed: Boolean,
     clickListener: () -> Unit
 ) {
     Log.d("RECOMPOSITION", "FollowButton")
     Button(
         onClick = { clickListener() },
         colors = ButtonDefaults.buttonColors(
-            containerColor = if (isFollowed.value) {
+            containerColor = if (isFollowed) {
                 MaterialTheme.colorScheme.primary.copy(alpha = 0.5f)
             } else {
                 MaterialTheme.colorScheme.primary
             }
         )
     ) {
-        val text = if(isFollowed.value) {
+        val text = if(isFollowed) {
             "Unfollow"
         } else {
             "Follow"
